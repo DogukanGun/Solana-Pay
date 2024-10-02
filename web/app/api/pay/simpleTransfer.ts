@@ -11,16 +11,16 @@ import {
 
 // API endpoint
 export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
+  request: NextApiRequest,
+  response: NextApiResponse
 ) {
-  if (req.method === "GET") {
-    return get(res)
+  if (request.method === "GET") {
+    return get(response)
   }
-  if (req.method === "POST") {
-    return await post(req, res)
+  if (request.method === "POST") {
+    return await post(request, response)
   }
-  res.status(405).json({ error: "Method not allowed" })
+  response.status(405).json({ error: "Method not allowed" })
 }
 
 // "res" is Text and Image that displays when wallet first scans
@@ -33,16 +33,16 @@ function get(res: NextApiResponse) {
 
 // "req" is public key of wallet scanning QR code
 // "res" is transaction built for wallet to approve, along with a message
-async function post(req: NextApiRequest, res: NextApiResponse) {
-  const { account } = req.body
+async function post(request: NextApiRequest, response: NextApiResponse) {
+  const { account } = request.body
   if (!account) {
-    res.status(400).json({ error: "No account provided" })
+    response.status(400).json({ error: "No account provided" })
     return
   }
 
-  const { reference } = req.query
+  const { reference } = request.query
   if (!reference) {
-    res.status(400).json({ error: "No reference provided" })
+    response.status(400).json({ error: "No reference provided" })
     return
   }
 
@@ -84,8 +84,8 @@ async function post(req: NextApiRequest, res: NextApiResponse) {
 
     const message = "Approve to transfer 0.001 Devnet SOL"
 
-    res.status(200).json({ transaction: base64, message })
+    response.status(200).json({ transaction: base64, message })
   } catch (error) {
-    res.status(500).json({ error: "error creating transaction" })
+    response.status(500).json({ error: "error creating transaction" })
   }
 }

@@ -20,30 +20,30 @@ function getEventOrganizer() {
 }
 
 export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
+  request: NextApiRequest,
+  response: NextApiResponse
 ) {
-  if (req.method === "GET") {
-    return get(res)
-  } else if (req.method === "POST") {
-    return await post(req, res)
+  if (request.method === "GET") {
+    return get(response)
+  } else if (request.method === "POST") {
+    return await post(request, response)
   }
-  res.status(405).json({ error: "Method not allowed" })
+  response.status(405).json({ error: "Method not allowed" })
 }
 
-function get(res: NextApiResponse) {
-  res.status(200).json({
+function get(response: NextApiResponse) {
+  response.status(200).json({
     label: "Scavenger Hunt!",
     icon: "https://solana.com/src/img/branding/solanaLogoMark.svg",
   })
 }
 
-async function post(req: NextApiRequest, res: NextApiResponse) {
-  const { account } = req.body
-  const { reference, id } = req.query
+async function post(request: NextApiRequest, response: NextApiResponse) {
+  const { account } = request.body
+  const { reference, id } = request.query
 
   if (!account || !reference || !id) {
-    res.status(400).json({ error: "Missing required parameter(s)" })
+    response.status(400).json({ error: "Missing required parameter(s)" })
     return
   }
 
@@ -54,7 +54,7 @@ async function post(req: NextApiRequest, res: NextApiResponse) {
       id.toString()
     )
 
-    res.status(200).json({
+    response.status(200).json({
       transaction: transaction,
       message: `You've found location ${id}!`,
     })
@@ -62,10 +62,10 @@ async function post(req: NextApiRequest, res: NextApiResponse) {
     console.log(err)
     let error = err as any
     if (error.message) {
-      res.status(200).json({ transaction: "", message: error.message })
+      response.status(200).json({ transaction: "", message: error.message })
       return
     }
-    res.status(500).json({ error: "error creating transaction" })
+    response.status(500).json({ error: "error creating transaction" })
   }
 }
 
